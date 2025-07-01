@@ -1,48 +1,40 @@
 name: 🚀 fs-forms-be - Deploy to Dev
-
 on:
   push:
     branches:
       - development
   workflow_dispatch:  #allows manual trigger
-
 jobs:
   deploy:
     name: Deploy to Dev Server
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code (for metadata only)
         uses: actions/checkout@v4
-
+      
       - name: Setup SSH Private Key
         run: |
-            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
       - name: Deploy via SSH
         run: |
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            set -e
-            export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
-
-            echo "[1/6] Navigate to dev dir"
-            cd ~/gab-on-be/dev
-
-            echo "[2/6] Remove old deployment if exists"
-            rm -rf fs-pebbl-BE || true
-
-            echo "[3/6] Clone repo branch"
-            git clone -b development https://github.com/TeamFleetStudio/fs-pebbl-BE
-            cd fs-pebbl-BE
-
-            echo "[4/6] Install dependencies"
-            npm install
-
-            echo "[5/6] Copy .env"
-            cp ../env.development .env
-
-            echo "[6/6] Restart PM2"
-            pm2 restart 3
-
-            echo "Deployment to development completed"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          set -e
+          export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
+          echo "[1/6] Navigate to dev dir"
+          cd ~/gab-on-be/dev
+          echo "[2/6] Remove old deployment if exists"
+          rm -rf fs-pebbl-BE || true
+          echo "[3/6] Clone repo branch"
+          git clone -b development https://github.com/TeamFleetStudio/fs-pebbl-BE
+          cd fs-pebbl-BE
+          echo "[4/6] Install dependencies"
+          npm install
+          echo "[5/6] Copy .env"
+          cp ../env.development .env
+          echo "[6/6] Restart PM2"
+          pm2 restart 3
+          echo "Deployment to development completed"
           EOF
