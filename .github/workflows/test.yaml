@@ -37,5 +37,6 @@ jobs:
           cp ../.env.development .env
           echo "[6/6] Restart PM2"
           pm2 restart dev-gab-on-be:3000
+          pm2 save
           echo "Deployment to development completed"
           EOF
