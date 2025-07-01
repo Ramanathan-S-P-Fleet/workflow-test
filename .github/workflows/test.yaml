@@ -1,4 +1,4 @@
-name: 🚀 fs-forms-be - Deploy to Dev
+name: fs-forms-be - Deploy to Dev
 on:
   push:
     branches:
