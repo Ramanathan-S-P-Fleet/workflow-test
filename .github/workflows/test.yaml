@@ -17,10 +17,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
           
       - name: Deploy via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh  -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           set -e
           export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
           echo "[1/6] Navigate to dev dir"
@@ -33,7 +34,7 @@ jobs:
           echo "[4/6] Install dependencies"
           npm install
           echo "[5/6] Copy .env"
-          cp ../env.development .env
+          cp ../.env.development .env
           echo "[6/6] Restart PM2"
           pm2 restart 3
           echo "Deployment to development completed"
